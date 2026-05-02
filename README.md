@@ -3,7 +3,7 @@
 A memory forensics tool written in C that reads and parses `/proc/[pid]/maps`
 to inspect the virtual address space of running Linux processes.
 
-Built as a learning project alongside K&R C and CS:APP.
+Built as a learning project alongside K&R C.
 
 ## Status
 
