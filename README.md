@@ -1,4 +1,4 @@
-# memory_map
+# memmap 
 
 A memory forensics tool written in C that reads and parses `/proc/[pid]/maps`
 to inspect the virtual address space of running Linux processes.
