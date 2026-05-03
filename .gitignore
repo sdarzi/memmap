@@ -5,7 +5,7 @@ build/
 a.out
  
 # Compiled binaries (add your binary name here)
-memory_mapper
+main
 
 # Debug files
 *.dSYM/
