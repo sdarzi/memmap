@@ -11,7 +11,7 @@ Work in progress. Being built incrementally.
 
 - [x] Step 1 — Read and print `/proc/self/maps` raw
 - [x] Step 2 — Parse each line into structured fields
-- [ ] Step 3 — Categorise and label regions
+- [x] Step 3 — Categorise and label regions
 - [ ] Step 4 — Target arbitrary process by PID
 - [ ] Step 5 — Read memory contents via `/proc/[pid]/mem`
 - [ ] Step 6 — Diff two snapshots over time
