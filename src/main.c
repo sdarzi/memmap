@@ -1,67 +1,19 @@
 #include <stdio.h>
-#include <string.h>
+#include <stdlib.h>
+#include "regions.h"
 
-typedef enum {
-    REGION_EXECUTABLE,
-    REGION_STACK,
-    REGION_HEAP,
-    REGION_VDSO,
-    REGION_ANONYMOUS,
-    REGION_OTHER
-} RegionType;
-
-typedef struct {
-    unsigned long start;
-    unsigned long end;
-    char perms[5];
-    char pathname[256];
-} MemoryRegion;
-
-RegionType classify_region(MemoryRegion *region) {
-    // take the memory region as input and
-    // output the region type
-    if (*region->pathname == '[') {
-        if (strcmp(region->pathname, "[stack]") == 0) {
-            return REGION_STACK;
-        } else if (strcmp(region->pathname, "[heap]") == 0) {
-            return REGION_HEAP;
-        } else {
-            return REGION_VDSO;
-        }
+int main(int argc, char *argv[]) {
+    char path[64];
+    if (argc < 2) {
+        snprintf(path, sizeof(path), "/proc/self/maps");
+    } else {
+        int pid = atoi(argv[1]);
+        snprintf(path, sizeof(path), "/proc/%d/maps", pid);
     }
-
-    if ((strstr(region->pathname, ".so") != NULL) || (strstr(region->perms, "x") != NULL))
-        return REGION_EXECUTABLE;
-
-    if (region->pathname[0] == '\0')
-        return REGION_ANONYMOUS;
-
-    return REGION_OTHER;
-}
-
-const char *region_label(RegionType type) {
-    // return a string like "STACK" or "HEAP"
-    switch (type) {
-    case REGION_STACK:
-        return "STACK";
-    case REGION_HEAP:
-        return "HEAP";
-    case REGION_EXECUTABLE:
-        return "EXECUTABLE";
-    case REGION_VDSO:
-        return "VDSO";
-    case REGION_ANONYMOUS:
-        return "ANONYMOUS";
-    default:
-        return "OTHER";
-    }
-}
-
-int main() {
     // open file
-    FILE *current_map = fopen("/proc/self/maps", "r");
+    FILE *current_map = fopen(path, "r");
     if (current_map == NULL) {
-        printf("Failed to open file\n");
+        printf("Error: could not open %s - check PID exists and you have permissions\n", path);
         return 1;
     }
     // read and print each line of the opened file
