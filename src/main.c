@@ -6,48 +6,33 @@
 int main(int argc, char *argv[]) {
 
 
-    char path[64];
     int pid;
-    // if no second argument, run on curreent pid
+
     if (argc < 2) {
         pid = getpid();
-        snprintf(path, sizeof(path), "/proc/self/maps");
     } else {
         pid = atoi(argv[1]);
-        snprintf(path, sizeof(path), "/proc/%d/maps", pid);
     }
 
+    MemoryRegion *snap1 = NULL;
+    MemoryRegion *snap2 = NULL;
 
-    // open file based on path above
-    FILE *current_map = fopen(path, "r");
-    if (current_map == NULL) {
-        printf("Error: could not open %s - check PID exists and you have permission\n", path);
-        return 1;
-    }
+    printf("taking first snapshot...\n");
+    int count1 = take_snapshots(pid, &snap1, 512);
 
-    // read and print each line of the opened file
-    char line[256];
-    MemoryRegion region;
-    while (fgets(line, sizeof(line), current_map) != NULL) {
-        region.pathname[0] = '\0';
-        sscanf(line, "%lx-%lx %4s %*x %*x:%*x %*d %255s",
-               &region.start,
-               &region.end,
-               region.perms,
-               region.pathname);
-        printf("START: %lx END: %lx PERMS: %s TYPE: %-10s PATH: %s\n",
-               region.start,
-               region.end,
-               region.perms,
-               region_label(classify_region(&region)),
-               region.pathname);
-        if (classify_region(&region) == REGION_EXECUTABLE){
-            dump_region(pid, &region, 256);
-        }
-    }
+    printf("sleeping for 5 seconds...\n");
+    sleep(5);
 
-    // close file
-    fclose(current_map);
+    printf("taking second snapsshot...\n");
+    int count2 = take_snapshots(pid, &snap2, 512);
+
+    printf("\n--- DIFF ---\n");
+    diff_snapshots(snap1, count1, snap2, count2);
+
+    free(snap1);
+    free(snap2);
+
+
 
     return 0;
 }

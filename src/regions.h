@@ -22,4 +22,7 @@ typedef struct {
 RegionType classify_region(MemoryRegion *region);
 const char *region_label(RegionType type);
 void dump_region(int pid, MemoryRegion *region, size_t max_bytes);
+int take_snapshots(int pid, MemoryRegion **regions_out, int max_regions);
+void diff_snapshots(MemoryRegion *snap1, int count1,
+                    MemoryRegion *snap2, int count2);
 #endif
