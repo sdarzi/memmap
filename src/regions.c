@@ -1,4 +1,6 @@
+#define _FILE_OFFSET_BITS 64
 #include "regions.h"
+#include <stdio.h>
 #include <string.h>
 
 
@@ -24,7 +26,6 @@ RegionType classify_region(MemoryRegion *region) {
     return REGION_OTHER;
 }
 
-
 const char *region_label(RegionType type) {
     // return a string like "STACK" or "HEAP"
     switch (type) {
@@ -40,5 +41,37 @@ const char *region_label(RegionType type) {
         return "ANONYMOUS";
     default:
         return "OTHER";
+    }
+}
+
+void dump_region(int pid, MemoryRegion *region, size_t max_bytes) {
+    char path[64];
+    if (region->perms[0] == 'r') {
+
+        snprintf(path, sizeof(path), "/proc/%d/mem", pid);
+
+        FILE *mem = fopen(path, "rb");
+
+        if (mem == NULL) {
+            printf("Error: could not open %s - check PID exists and you have permission\n", path);
+            return;
+        }
+
+        fseeko(mem, (off_t)region->start, SEEK_SET);
+
+        unsigned char buffer[4096];
+        size_t to_read = max_bytes < sizeof(buffer) ? max_bytes : sizeof(buffer);
+        size_t bytes_read = fread(buffer, 1, to_read, mem);
+        if (bytes_read == 0){
+            fclose(mem);
+            return;
+        }
+
+        for (size_t i = 0; i < bytes_read; i++) {
+            printf("%02x ", buffer[i]);
+            if ((i + 1) % 16 == 0)
+                printf("\n");
+        }
+        fclose(mem);
     }
 }

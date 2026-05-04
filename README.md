@@ -13,7 +13,7 @@ Work in progress. Being built incrementally.
 - [x] Step 2 — Parse each line into structured fields
 - [x] Step 3 — Categorise and label regions
 - [x] Step 4 — Target arbitrary process by PID
-- [ ] Step 5 — Read memory contents via `/proc/[pid]/mem`
+- [x] Step 5 — Read memory contents via `/proc/[pid]/mem`
 - [ ] Step 6 — Diff two snapshots over time
 
 ## Background

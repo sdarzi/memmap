@@ -1,17 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "regions.h"
 
 int main(int argc, char *argv[]) {
 
 
     char path[64];
-    
+    int pid;
     // if no second argument, run on curreent pid
     if (argc < 2) {
+        pid = getpid();
         snprintf(path, sizeof(path), "/proc/self/maps");
     } else {
-        int pid = atoi(argv[1]);
+        pid = atoi(argv[1]);
         snprintf(path, sizeof(path), "/proc/%d/maps", pid);
     }
 
@@ -19,7 +21,7 @@ int main(int argc, char *argv[]) {
     // open file based on path above
     FILE *current_map = fopen(path, "r");
     if (current_map == NULL) {
-        printf("Error: could not open %s - check PID exists and you have permissions\n", path);
+        printf("Error: could not open %s - check PID exists and you have permission\n", path);
         return 1;
     }
 
@@ -39,6 +41,9 @@ int main(int argc, char *argv[]) {
                region.perms,
                region_label(classify_region(&region)),
                region.pathname);
+        if (classify_region(&region) == REGION_EXECUTABLE){
+            dump_region(pid, &region, 256);
+        }
     }
 
     // close file

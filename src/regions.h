@@ -1,6 +1,8 @@
 #ifndef REGIONS_H
 #define REGIONS_H
 
+#include <stddef.h>
+
 typedef enum {
     REGION_EXECUTABLE,
     REGION_STACK,
@@ -19,5 +21,5 @@ typedef struct {
 
 RegionType classify_region(MemoryRegion *region);
 const char *region_label(RegionType type);
-
+void dump_region(int pid, MemoryRegion *region, size_t max_bytes);
 #endif
