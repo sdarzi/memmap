@@ -1,11 +1,10 @@
 # Build output
 build/
 *.o
-*.out
-a.out
  
 # Compiled binaries (add your binary name here)
-main
+memmap
+
 
 # Debug files
 *.dSYM/
